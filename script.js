@@ -152,7 +152,7 @@
 
     for (var i = 0; i < FLORES.length; i++) {
       var f = FLORES[i];
-      bouquet.insertAdjacentHTML("beforeend", florSVG(f[0], f[1] * 1.28, BASE_DELAY + i * SPACING));
+      bouquet.insertAdjacentHTML("beforeend", florSVG(f, f[1] * 1.28, BASE_DELAY + i * SPACING));
     }
 
     var ramos = [
@@ -163,7 +163,7 @@
       [73, 0.7, 3.3],
     ];
     for (var r = 0; r < ramos.length; r++) {
-      bouquet.insertAdjacentHTML("beforeend", ramitos(ramos[r][0], ramos[r][1], ramos[r][2]));
+      bouquet.insertAdjacentHTML("beforeend", ramitos(ramos[r], ramos[r][1], ramos[r][2]));
     }
 
     requestAnimationFrame(function () {
