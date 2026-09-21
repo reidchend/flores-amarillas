@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para ti · Día de las Flores Amarillas</title>
+  <meta name="description" content="Flores amarillas para quien merece ser protagonista." />
+  <meta property="og:title" content="Para ti · Día de las Flores Amarillas" />
+  <meta property="og:description" content="Porque mereces ser protagonista, y no espectadora." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+
+  <main class="hero" id="hero">
+    <p class="eyebrow">21 de septiembre · Día de las Flores Amarillas</p>
+    <h1 class="title">Para ti</h1>
+    <p class="subtitle">Porque mereces ser <em>protagonista</em>,<br />y no espectadora.</p>
+    <button id="btn" type="button">Construye tu ramo</button>
+    <p class="hint">toca el botón y mira florecer</p>
+  </main>
+
+  <div class="bouquet-wrap" id="bouquetWrap" aria-hidden="true">
+    <div class="bouquet" id="bouquet"></div>
+    <div class="bow" id="bow">
+      <svg viewBox="0 0 320 150" aria-hidden="true">
+        <g class="bow-r">
+          <path d="M160 78 C 78 20 22 36 30 84 C 36 122 114 122 160 88 Z" fill="url(#bowGrad)" />
+          <path d="M30 84 C 24 66 34 52 52 48" stroke="#d9b45c" stroke-width="5" fill="none" stroke-linecap="round" />
+        </g>
+        <g class="bow-l">
+          <path d="M160 78 C 242 20 298 36 290 84 C 284 122 206 122 160 88 Z" fill="url(#bowGrad)" />
+          <path d="M290 84 C 296 66 286 52 268 48" stroke="#d9b45c" stroke-width="5" fill="none" stroke-linecap="round" />
+        </g>
+        <g class="bow-knot">
+          <ellipse cx="160" cy="86" rx="20" ry="16" fill="#c89a3b" />
+          <path d="M160 70 C 170 80 170 92 160 102 C 150 92 150 80 160 70 Z" fill="#a87a26" />
+        </g>
+        <g class="bow-tail">
+          <path d="M152 96 C 138 120 128 138 118 146" stroke="#c89a3b" stroke-width="9" fill="none" stroke-linecap="round" />
+          <path d="M168 96 C 182 120 192 138 202 146" stroke="#c89a3b" stroke-width="9" fill="none" stroke-linecap="round" />
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="replay" id="replay" hidden>
+    <button type="button" id="again">Ver de nuevo</button>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="petGrad" cx="50%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="#fff3b0" />
+        <stop offset="55%" stop-color="#ffd23e" />
+        <stop offset="100%" stop-color="#eea000" />
+      </radialGradient>
+      <radialGradient id="petGradDeep" cx="50%" cy="40%" r="80%">
+        <stop offset="0%" stop-color="#ffc82e" />
+        <stop offset="100%" stop-color="#f08200" />
+      </radialGradient>
+      <radialGradient id="centerGrad" cx="50%" cy="45%" r="60%">
+        <stop offset="0%" stop-color="#8a5627" />
+        <stop offset="70%" stop-color="#5e3512" />
+        <stop offset="100%" stop-color="#3f2008" />
+      </radialGradient>
+      <linearGradient id="stemGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#579a44" />
+        <stop offset="50%" stop-color="#3f7c2f" />
+        <stop offset="100%" stop-color="#2f6124" />
+      </linearGradient>
+      <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#6fae56" />
+        <stop offset="100%" stop-color="#3f7c2f" />
+      </linearGradient>
+      <linearGradient id="bowGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e7c166" />
+        <stop offset="100%" stop-color="#c08c2e" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
