@@ -1,6 +1,14 @@
-# Las Flores Amarillas
+# Esta página es para ti · Día de las Flores Amarillas
 
-Página para el 21 de septiembre (Día de las Flores Amarillas). Toca el botón y se construye un ramo de flores amarillas.
+Experiencia para el 21 de septiembre. Si nadie te regaló flores amarillas hoy, aquí se cultiva una solo para ti.
+
+- **Gancho narrativo**: "Si nadie te regaló flores amarillas hoy, esta página es para ti."
+- **Elige tu flor**: girasol, tulipán, rosa amarilla o lirio.
+- **La flor se dibuja sola** (SVG con trazo animado pathLength) y luego florece.
+- **Lluvia de pétalos interactiva** en `<canvas>` que reacciona al cursor y al tacto.
+- **Mensajes reconfortantes** aleatorios al terminar.
+- **Certificado descargable** (PNG) con la fecha, tu flor y una dedicatoria.
+- **Música suave** generada con WebAudio (opcional).
 
 ## Probar en local
 
@@ -11,18 +19,11 @@ python3 -m http.server 8080
 
 ## Publicar en GitHub Pages
 
-1. Crea un repositorio en GitHub (público): `https://github.com/new`
-2. En esta carpeta:
-
 ```bash
 git add .
-git commit -m "Página Día de las Flores Amarillas"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
-git push -u origin main
+git commit -m "Nueva experiencia: elige tu flor y hazla florecer"
+git push
 ```
 
-3. En GitHub: repositorio → **Settings** → **Pages** → en *Source* elige **Deploy from a branch** y la rama `main` (carpeta `/root`).
-4. El sitio queda en `https://TU_USUARIO.github.io/TU_REPO`
-
-> Mientras la rama no tenga un `.nojekyll`, GitHub Pages sirve el HTML directo desde la raíz, no hace falta build.
+Repo: https://github.com/reidchend/flores-amarillas
+Sitio: https://reidchend.github.io/flores-amarillas/

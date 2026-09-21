@@ -3,84 +3,125 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Para ti · Día de las Flores Amarillas</title>
-  <meta name="description" content="Flores amarillas para quien merece ser protagonista." />
-  <meta property="og:title" content="Para ti · Día de las Flores Amarillas" />
-  <meta property="og:description" content="Porque mereces ser protagonista, y no espectadora." />
+  <title>Esta página es para ti · Día de las Flores Amarillas</title>
+  <meta name="description" content="Si nadie te regaló flores amarillas hoy, esta página es para ti." />
+  <meta property="og:title" content="Esta página es para ti · Día de las Flores Amarillas" />
+  <meta property="og:description" content="Si nadie te regaló flores amarillas hoy, esta página es para ti." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <canvas id="petalCanvas" aria-hidden="true"></canvas>
+
   <div class="glow glow-a" aria-hidden="true"></div>
   <div class="glow glow-b" aria-hidden="true"></div>
 
-  <main class="hero" id="hero">
-    <p class="eyebrow">21 de septiembre · Día de las Flores Amarillas</p>
-    <h1 class="title">Para ti</h1>
-    <p class="subtitle">Porque mereces ser <em>protagonista</em>,<br />y no espectadora.</p>
-    <button id="btn" type="button">Construye tu ramo</button>
-    <p class="hint">toca el botón y mira florecer</p>
+  <button id="musicBtn" class="music-btn" type="button" aria-pressed="false" aria-label="Activar música suave">Música</button>
+
+  <main>
+    <!-- Escena 0 · Portada -->
+    <section class="scene scene--active" id="scene0">
+      <div class="frame">
+        <p class="eyebrow">21 de septiembre · Día de las Flores Amarillas</p>
+        <h1>
+          Si nadie te regaló
+          <span class="h1-em">flores amarillas</span> hoy,
+          <span class="h1-main">esta página es para ti.</span>
+        </h1>
+        <p class="lead">Tómate un momento. Aquí tu flor ya está esperando.</p>
+        <button class="btn btn--gold" id="btnStart" type="button">Recibir mi flor</button>
+        <p class="hint help-text">También puedes presionar Enter.</p>
+      </div>
+    </section>
+
+    <!-- Escena 1 · Elegir flor -->
+    <section class="scene" id="scene1" hidden>
+      <div class="frame">
+        <p class="eyebrow">Paso 1 · Elige</p>
+        <h2 class="scene-title">¿Qué flor quieres cultivar hoy?</h2>
+        <div class="picker" id="picker" role="listbox" aria-label="Elegir tipo de flor">
+          <button class="flower-card" type="button" data-flor="girasol" role="option" aria-label="Girasol">
+            <span class="card-svg" data-flor="girasol"></span>
+            <b>Girasol</b>
+            <i>la que siempre mira al sol</i>
+          </button>
+          <button class="flower-card" type="button" data-flor="tulipán" role="option" aria-label="Tulipán">
+            <span class="card-svg" data-flor="tulipán"></span>
+            <b>Tulipán</b>
+            <i>la elegancia que se anuncia sola</i>
+          </button>
+          <button class="flower-card" type="button" data-flor="rosa" role="option" aria-label="Rosa amarilla">
+            <span class="card-svg" data-flor="rosa"></span>
+            <b>Rosa amarilla</b>
+            <i>la amistad y la alegría</i>
+          </button>
+          <button class="flower-card" type="button" data-flor="lirio" role="option" aria-label="Lirio">
+            <span class="card-svg" data-flor="lirio"></span>
+            <b>Lirio</b>
+            <i>la calma que se abre despacio</i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Escena 2 · Florecer -->
+    <section class="scene scene--flower" id="scene2" hidden>
+      <div class="stage">
+        <button class="replant" id="btnAgain" type="button">← Cultivar otra</button>
+        <div class="flor-wrap" id="florWrap" aria-hidden="true"></div>
+        <p class="flor-name" id="florName"></p>
+      </div>
+
+      <div class="note" id="note" hidden>
+        <p class="note-text" id="noteText"></p>
+        <div class="acts">
+          <button class="btn btn--gold" id="btnSave" type="button">Guardar mi flor</button>
+          <button class="btn btn--soft" id="btnShare" type="button">Enviar este abrazo</button>
+        </div>
+        <p class="note-fade" id="noteFade"></p>
+      </div>
+    </section>
   </main>
 
-  <div class="bouquet-wrap" id="bouquetWrap" aria-hidden="true">
-    <div class="bouquet" id="bouquet"></div>
-    <div class="bow" id="bow">
-      <svg viewBox="0 0 320 150" aria-hidden="true">
-        <g class="bow-r">
-          <path d="M160 78 C 78 20 22 36 30 84 C 36 122 114 122 160 88 Z" fill="url(#bowGrad)" />
-          <path d="M30 84 C 24 66 34 52 52 48" stroke="#d9b45c" stroke-width="5" fill="none" stroke-linecap="round" />
-        </g>
-        <g class="bow-l">
-          <path d="M160 78 C 242 20 298 36 290 84 C 284 122 206 122 160 88 Z" fill="url(#bowGrad)" />
-          <path d="M290 84 C 296 66 286 52 268 48" stroke="#d9b45c" stroke-width="5" fill="none" stroke-linecap="round" />
-        </g>
-        <g class="bow-knot">
-          <ellipse cx="160" cy="86" rx="20" ry="16" fill="#c89a3b" />
-          <path d="M160 70 C 170 80 170 92 160 102 C 150 92 150 80 160 70 Z" fill="#a87a26" />
-        </g>
-        <g class="bow-tail">
-          <path d="M152 96 C 138 120 128 138 118 146" stroke="#c89a3b" stroke-width="9" fill="none" stroke-linecap="round" />
-          <path d="M168 96 C 182 120 192 138 202 146" stroke="#c89a3b" stroke-width="9" fill="none" stroke-linecap="round" />
-        </g>
-      </svg>
+  <footer class="foot">
+    <p>Hecho con paciencia y código, para que nadie se quede sin flores.</p>
+    <p class="foot-sub">Si conoces a alguien que lo necesite hoy, compártelo.</p>
+  </footer>
+
+  <!-- Certificado -->
+  <div class="overlay" id="certOverlay" hidden>
+    <div class="cert-card">
+      <canvas id="certCanvas" width="1000" height="700" aria-label="Certificado de su flor amarilla"></canvas>
+      <div class="cert-actions">
+        <button class="btn btn--gold" id="btnDownload" type="button">Descargar imagen</button>
+        <button class="btn btn--soft" id="btnCloseCert" type="button">Cerrar</button>
+      </div>
+      <p class="cert-hint" id="certHint"></p>
     </div>
   </div>
 
-  <div class="replay" id="replay" hidden>
-    <button type="button" id="again">Ver de nuevo</button>
-  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <radialGradient id="petGrad" cx="50%" cy="30%" r="80%">
-        <stop offset="0%" stop-color="#fff3b0" />
+      <linearGradient id="petalSheen" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#fff0a8" />
         <stop offset="55%" stop-color="#ffd23e" />
-        <stop offset="100%" stop-color="#eea000" />
-      </radialGradient>
-      <radialGradient id="petGradDeep" cx="50%" cy="40%" r="80%">
-        <stop offset="0%" stop-color="#ffc82e" />
-        <stop offset="100%" stop-color="#f08200" />
-      </radialGradient>
-      <radialGradient id="centerGrad" cx="50%" cy="45%" r="60%">
-        <stop offset="0%" stop-color="#8a5627" />
-        <stop offset="70%" stop-color="#5e3512" />
-        <stop offset="100%" stop-color="#3f2008" />
-      </radialGradient>
-      <linearGradient id="stemGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#579a44" />
-        <stop offset="50%" stop-color="#3f7c2f" />
-        <stop offset="100%" stop-color="#2f6124" />
+        <stop offset="100%" stop-color="#f0a800" />
       </linearGradient>
-      <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#6fae56" />
-        <stop offset="100%" stop-color="#3f7c2f" />
+      <linearGradient id="roseGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ffe38a" />
+        <stop offset="100%" stop-color="#e8a21c" />
       </linearGradient>
-      <linearGradient id="bowGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#e7c166" />
-        <stop offset="100%" stop-color="#c08c2e" />
-      </linearGradient>
+      <radialGradient id="sun" cx="50%" cy="45%" r="60%">
+        <stop offset="0%" stop-color="#7f4e20" />
+        <stop offset="75%" stop-color="#593110" />
+        <stop offset="100%" stop-color="#3a1d05" />
+      </radialGradient>
     </defs>
   </svg>
 
