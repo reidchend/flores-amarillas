@@ -54,11 +54,7 @@
     for (var j = 1; j <= 8; j++) luces += '<div class="flower__light flower__light--' + j + '"></div>';
     var head =
       '<div class="flower__leafs">' +
-      '<div class="flower__leaf flower__leaf--1"></div>' +
-      '<div class="flower__leaf flower__leaf--2"></div>' +
-      '<div class="flower__leaf flower__leaf--3"></div>' +
-      '<div class="flower__leaf flower__leaf--4"></div>' +
-      '<div class="flower__white-circle"></div>' +
+      headPorTipo(tipo) +
       luces +
       "</div>";
     var grassLeaves = "";
@@ -94,6 +90,32 @@
     cont.appendChild(escena);
     hiloCam();
     return reduce ? 0.25 : 4.6;
+  }
+
+  function petalHtml(rot, t, delay) {
+    return '<div class="flower__petal" style="--rot:' + rot +
+      'deg;--t:' + t + ';--delay:' + delay.toFixed(2) + 's"></div>';
+  }
+
+  function headPorTipo(tipo) {
+    var p = "", i;
+    if (tipo === "girasol") {
+      for (i = 0; i < 16; i++) p += petalHtml(i * 22.5, 0, 0.2 + i * 0.06);
+      return p + '<div class="flower__center"></div>';
+    }
+    if (tipo === "tulipán") {
+      for (i = 0; i < 6; i++) p += petalHtml(i * 60, 0, 0.2 + i * 0.09);
+      return p + '<div class="flower__sep"></div>';
+    }
+    if (tipo === "rosa") {
+      for (i = 0; i < 5; i++) p += petalHtml(i * 72, "calc(var(--fv) * 6)", 0.15 + i * 0.06);
+      for (i = 0; i < 5; i++) p += petalHtml(i * 72 + 36, "calc(var(--fv) * 3.5)", 0.22 + i * 0.06);
+      for (i = 0; i < 4; i++) p += petalHtml(i * 90 + 18, "calc(var(--fv) * 1.4)", 0.3 + i * 0.07);
+      return p + '<div class="flower__center"></div>';
+    }
+    for (i = 0; i < 6; i++) p += petalHtml(i * 60, 0, 0.2 + i * 0.09);
+    for (i = 0; i < 6; i++) p += '<div class="flower__stamen" style="--rot:' + (i * 60 + 30) + 'deg;--delay:' + (0.8 + i * 0.12).toFixed(2) + 's"></div>';
+    return p + '<div class="flower__center"></div>';
   }
 
   /* ============================ Pétalos ambientales ============================ */

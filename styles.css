@@ -337,7 +337,7 @@ button:focus-visible {
   justify-content: center;
 }
 
-/* ---------- Flor CSS (escena mini de DaniCodex/flores-amarillas-tres) ---------- */
+/* ---------- Flor CSS (DaniCodex en base + flor por especie) ---------- */
 
 .flor-css {
   position: absolute;
@@ -346,7 +346,7 @@ button:focus-visible {
   align-items: flex-end;
   justify-content: center;
   container-type: size;
-  container-name: fl; 
+  container-name: fl;
   border-radius: 16px;
   overflow: hidden;
   perspective: 1000px;
@@ -434,56 +434,142 @@ button:focus-visible {
   filter: blur(calc(var(--fv) * 9));
   z-index: -1;
 }
-.flower .flower__leaf {
+
+/* ---------- Pétalos: fan radial + anillos, cada especie define forma ---------- */
+
+.flower .flower__petal {
   position: absolute;
+  left: 50%;
   bottom: 0;
-  left: 50%;
-  width: calc(var(--fv) * 8);
-  height: calc(var(--fv) * 11);
-  border-radius: 51% 49% 47% 53% / 44% 45% 55% 69%;
+  width: var(--pw, calc(var(--fv) * 5));
+  height: var(--ph, calc(var(--fv) * 12));
+  transform-origin: 50% 100%;
+  transform: rotate(var(--rot, 0deg)) translateY(var(--t, 0));
   background-color: var(--petal);
-  transform-origin: bottom center;
-  opacity: 0.9;
-  box-shadow: inset 0 0 calc(var(--fv) * 2) rgba(255, 255, 255, 0.5);
-}
-.flower .flower__leaf--1 { transform: translate(-10%, 1%) rotateY(40deg) rotateX(-50deg); }
-.flower .flower__leaf--2 { transform: translate(-50%, -4%) rotateX(40deg); }
-.flower .flower__leaf--3 { transform: translate(-90%, 0%) rotateY(45deg) rotateX(50deg); }
-.flower .flower__leaf--4 {
-  width: calc(var(--fv) * 8);
-  height: calc(var(--fv) * 8);
-  transform-origin: bottom left;
-  border-radius: calc(var(--fv) * 4) calc(var(--fv) * 10) calc(var(--fv) * 4) calc(var(--fv) * 4);
-  transform: translate(0%, 18%) rotateX(70deg) rotate(-43deg);
-  background-color: #7c6901;
+  background-image: linear-gradient(to top, rgba(120, 70, 0, 0.35), transparent 65%);
+  box-shadow: inset 0 0 calc(var(--fv) * 2) rgba(255, 255, 255, 0.45);
+  animation: petal-bloom var(--fl-speed) var(--delay, 0s) backwards;
   z-index: 1;
-  opacity: 0.8;
 }
-.flower .flower__white-circle {
-  position: absolute;
-  left: calc(var(--fv) * -3.5);
-  top: calc(var(--fv) * -3);
-  width: calc(var(--fv) * 9);
-  height: calc(var(--fv) * 4);
-  border-radius: 50%;
-  background-color: #fff;
-}
-.flower .flower__white-circle::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 45%;
-  transform: translate(-50%, -50%);
-  width: 62%;
-  height: 68%;
-  border-radius: inherit;
-  background: repeating-conic-gradient(rgba(176, 118, 0, 0.28) 0deg 9deg, transparent 9deg 22deg);
+@keyframes petal-bloom {
+  0% {
+    transform: rotate(var(--rot, 0deg)) translateY(var(--t, 0)) scale(0.15);
+    opacity: 0;
+  }
 }
 
+.flower .flower__center,
+.flower .flower__sep {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  z-index: 3;
+}
+
+/* Girasol: 16 pétalos largos finos + disco oscuro con semillas */
+.escena--girasol .flower__petal {
+  --pw: calc(var(--fv) * 4.6);
+  --ph: calc(var(--fv) * 15);
+  border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+  background-image: linear-gradient(to top, #b45309, var(--petal) 70%);
+}
+.escena--girasol .flower__center {
+  width: calc(var(--fv) * 12.5);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #7a4a1e, #3b200a 72%);
+  box-shadow: inset 0 0 calc(var(--fv) * 2) rgba(0, 0, 0, 0.6), 0 0 calc(var(--fv) * 2) rgba(0, 0, 0, 0.35);
+}
+.escena--girasol .flower__center::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(24, 12, 2, 0.55) 0 4deg, transparent 4deg 22deg);
+}
+
+/* Tulipán: 6 pétalos anchos en copa + sépalo verde, sin disco */
+.escena--tulipán .flower__petal {
+  --pw: calc(var(--fv) * 6.2);
+  --ph: calc(var(--fv) * 16);
+  border-radius: 50% 50% 6% 6% / 78% 78% 22% 22%;
+  background-image: linear-gradient(to top, #a16207, var(--petal) 55%, #fff3b0);
+}
+.escena--tulipán .flower__sep {
+  width: calc(var(--fv) * 5.4);
+  height: calc(var(--fv) * 3);
+  border-radius: 50% 50% 28% 28%;
+  background: linear-gradient(#4d8b2a, #1f4a17);
+  z-index: 0;
+}
+
+/* Rosa: pétalos redondeados en anillos concéntricos + centro en espiral */
+.escena--rosa .flower__petal {
+  border-radius: 50% 50% 45% 45% / 72% 72% 28% 28%;
+}
+.escena--rosa .flower__center {
+  width: calc(var(--fv) * 5);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffd166, #b45309 80%);
+  box-shadow: inset 0 0 calc(var(--fv) * 1) rgba(0, 0, 0, 0.4);
+}
+
+/* Lirio: 6 tépalos puntiagudos alargados + estambres con anteras */
+.escena--lirio .flower__petal {
+  --pw: calc(var(--fv) * 4.2);
+  --ph: calc(var(--fv) * 15);
+  border-radius: 80% 80% 12% 12% / 60% 60% 40% 40%;
+  background-image: linear-gradient(to top, #d97706, var(--petal) 55%, #fff8e1);
+}
+.escena--lirio .flower__petal::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  top: 55%;
+  border-radius: inherit;
+  background-image: radial-gradient(circle, #8a4b00 0 1.3px, transparent 1.6px);
+  background-size: calc(var(--fv) * 1.4) calc(var(--fv) * 1.8);
+  opacity: 0.55;
+}
+.escena--lirio .flower__stamen {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--fv) * 0.7);
+  height: calc(var(--fv) * 12);
+  background: linear-gradient(#e9d77a, #b45309);
+  transform-origin: 50% 100%;
+  transform: rotate(var(--rot, 0deg));
+  z-index: 4;
+  animation: petal-bloom var(--fl-speed) var(--delay, 0s) backwards;
+}
+.escena--lirio .flower__stamen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  width: calc(var(--fv) * 1.8);
+  height: calc(var(--fv) * 2.4);
+  background: #7c2d12;
+  border-radius: 40%;
+}
+.escena--lirio .flower__center {
+  width: calc(var(--fv) * 3.4);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #e9f5a3, #6f9b2f 80%);
+}
+
+/* Tallo y hojas del tallo según especie */
 .flower .flower__line {
   position: relative;
   width: calc(var(--fv) * 1.6);
-  height: min(58cqh, calc(var(--fv) * 26));
+  height: min(46cqh, calc(var(--fv) * 22));
   background-image:
     linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent, rgba(255, 255, 255, 0.2)),
     linear-gradient(to top, transparent 10%, #10706a, #41cfa5);
@@ -520,6 +606,25 @@ button:focus-visible {
 .flower .flower__line__leaf--5 { top: 0; transform-origin: left; transform: rotate(70deg) rotateY(30deg) scale(0.6); animation: blooming-leaf-right var(--fl-speed) 1.8s backwards; }
 .flower .flower__line__leaf--6 { top: -2%; left: -450%; transform-origin: right; transform: rotate(-70deg) rotateY(30deg) scale(0.6); animation: blooming-leaf-left var(--fl-speed) 2s backwards; }
 
+.escena--tulipán .flower__line__leaf {
+  --w: calc(var(--fv) * 3.2);
+  --h: calc(var(--fv) * 16);
+  border-radius: calc(var(--fv) * 9) 50% 40% 60%;
+  background-image: linear-gradient(to top, rgba(31, 74, 23, 0.5), #4d8b2a);
+}
+.escena--rosa .flower__line__leaf {
+  --w: calc(var(--fv) * 3.4);
+  --h: calc(var(--fv) * 5);
+  border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+  background-image: linear-gradient(to top, rgba(31, 74, 23, 0.5), #4d8b2a);
+}
+.escena--lirio .flower__line__leaf {
+  --w: calc(var(--fv) * 2.6);
+  --h: calc(var(--fv) * 14);
+  border-radius: calc(var(--fv) * 8) 30% 30% calc(var(--fv) * 8);
+  background-image: linear-gradient(to top, rgba(31, 74, 23, 0.5), #4d8b2a);
+}
+
 .flower .flower__light {
   position: absolute;
   bottom: 0;
@@ -551,6 +656,7 @@ button:focus-visible {
 .flower-side .flower { animation-name: moving-flower-2; }
 .flower-side .flower .flower__line { width: calc(var(--fv) * 1.6); height: 170px; }
 .flower-side .flower .flower__leafs { animation-delay: 1.4s; }
+.flower-side .flower .flower__leafs .flower__petal { animation-delay: calc(var(--delay, 0s) + 1.4s); }
 .flower-side .flower .flower__line__leaf--1 { animation-delay: 1.9s; }
 .flower-side .flower .flower__line__leaf--2 { animation-delay: 1.7s; }
 .flower-side .flower .flower__line__leaf--3 { animation-delay: 1.5s; }
@@ -565,10 +671,19 @@ button:focus-visible {
 .flower-side-l .flower { animation-name: moving-flower-3; }
 .flower-side-l .flower .flower__line { height: 140px; }
 .flower-side-l .flower .flower__leafs { animation-delay: 1.7s; }
-.flower-side-l .flower .flower__line__leaf--1 { animation-delay: 2.5s; }
-.flower-side-l .flower .flower__line__leaf--2 { animation-delay: 2.3s; }
-.flower-side-l .flower .flower__line__leaf--3 { animation-delay: 2.1s; }
-.flower-side-l .flower .flower__line__leaf--4 { animation-delay: 1.9s; }
+.flower-side-l .flower .flower__leafs .flower__petal { animation-delay: calc(var(--delay, 0s) + 1.7s); }
+
+@container fl (max-height: 480px) {
+  .flower {
+    --fv: calc(3.9cqw * 0.7);
+  }
+  .flower .flower__line {
+    height: min(34cqh, calc(var(--fv) * 26));
+  }
+  .flower-side .flower .flower__line { height: 90px; }
+  .flower-side-l .flower .flower__line { height: 70px; }
+  .flower__grass--bottom { height: 10vh; }
+}
 
 .growing-grass {
   position: absolute;
@@ -682,37 +797,13 @@ button:focus-visible {
 @keyframes growing-grass-ans--7 { 0% { transform-origin: bottom left; transform: rotate(-10deg) scale(0); } }
 @keyframes growing-grass-ans--8 { 0% { transform-origin: bottom right; transform: rotate(10deg) scale(0); } }
 
-.escena--girasol .flower__white-circle {
-  background: #593110;
-}
-.escena--girasol .flower__leafs::after {
-  background-color: #f9d93a;
-}
-
-.escena--tulipán .flower__leaf {
-  border-radius: 30% 70% 45% 55% / 60% 60% 40% 40%;
-}
-.escena--tulipán .flower__white-circle {
-  background: #ffd23e;
-}
-
-.escena--rosa .flower__leaf {
-  border-radius: 58% 42% 0 0 / 84% 84% 16% 16%;
-}
-.escena--rosa .flower__white-circle {
-  background: #ffe9a8;
-}
-
-.escena--lirio .flower__white-circle {
-  background: #fff;
-}
-.escena--lirio .flower__leaf {
-  background-image: linear-gradient(to top, var(--petal), #fffbe6);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .flor-css .flower,
   .flor-css .flower__leafs,
+  .flor-css .flower__petal,
+  .flor-css .flower__stamen,
+  .flor-css .flower__center,
+  .flor-css .flower__sep,
   .flor-css .flower__line,
   .flor-css .flower__line__leaf,
   .flor-css .flower__grass__leaf,
