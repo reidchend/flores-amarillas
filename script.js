@@ -35,353 +35,41 @@
     gold: "#ffe98a",
   };
 
-  /* ============================ Motor de la flor ============================ */
-
-  var florCv = $("#florCanvas"), fctx = florCv.getContext("2d");
-  florCv.width = FW * 2; florCv.height = FH * 2;
-  fctx.scale(2, 2);
-
-  var flor = { tipo: null, t0: 0, on: false, maxD: 3.6 };
+  /* ============================ Flor (CSS de DaniCodex) ============================ */
 
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var MAXD = { girasol: 3.7, "tulipán": 3.5, rosa: 3.8, lirio: 3.6 };
-  var MAXD_FAST = 0.55;
+  var COLORES_FLOR = {
+    girasol: "#fddd25",
+    "tulipán": "#f5b41c",
+    rosa: "#f7b733",
+    lirio: "#ffe98a",
+  };
 
-  /* ---------- ayudantes de dibujo ---------- */
-
-  function gradV2(x0, y0, x1, y1, s0, s1, s2, p2) {
-    var g = fctx.createLinearGradient(x0, y0, x1, y1);
-    g.addColorStop(0, s0);
-    g.addColorStop(p2 || 0.55, s1);
-    g.addColorStop(1, s2 === undefined ? s1 : s2);
-    return g;
-  }
-
-  function pathLen(x0, y0, cx, my, y1) {
-    var n = 40, L = 0, px = x0, py = y0;
-    for (var i = 1; i <= n; i++) {
-      var t = i / n, u = 1 - t;
-      var x = u * u * x0 + 2 * u * t * cx + t * t * x0;
-      var y = u * u * y0 + 2 * u * t * my + t * t * y1;
-      L += Math.hypot(x - px, y - py);
-      px = x; py = y;
-    }
-    return L;
-  }
-
-  function tallo(x0, y0, cxm, cym, y1, lw, s, d) {
-    var p = prog(s, d);
-    if (p <= 0) return;
-    var L = pathLen(x0, y0, cxm, cym, y1);
-    fctx.save();
-    fctx.lineCap = "round";
-    fctx.strokeStyle = gradV2(0, y0, 0, y1, C.stem, C.stem); // la curva define el color
-    fctx.lineWidth = lw;
-    fctx.beginPath();
-    fctx.moveTo(x0, y0);
-    fctx.quadraticCurveTo(cxm, cym, x0, y1);
-    fctx.setLineDash([L * p, L * 8]);
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  function hoja(x0, y0, angRad, dir, L, W, s, d) {
-    var p = progBack(s, d);
-    if (p <= 0) return;
-    fctx.save();
-    fctx.translate(x0, y0);
-    fctx.rotate(angRad);
-    fctx.rotate((1 - p) * 0.85 * dir); // desplegarse
-    fctx.scale(p, p);
-    fctx.beginPath();
-    fctx.moveTo(0, 0);
-    fctx.bezierCurveTo(-W * 0.6, L * 0.28, -W * 0.95, L * 0.62, 0, L);
-    fctx.bezierCurveTo(W * 0.95, L * 0.62, W * 0.6, L * 0.28, 0, 0);
-    fctx.closePath();
-    fctx.fillStyle = C.leaf;
-    fctx.strokeStyle = C.leafD;
-    fctx.lineWidth = 1.6;
-    fctx.fill();
-    fctx.stroke();
-    fctx.beginPath();
-    fctx.moveTo(0, 0);
-    fctx.quadraticCurveTo(0, L * 0.5, 0, L);
-    fctx.strokeStyle = "rgba(58,102,34,0.45)";
-    fctx.lineWidth = 1;
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  function petalShape(w, len, tipBend) {
-    var tb = tipBend * len * 0.10;
-    fctx.beginPath();
-    fctx.moveTo(0, 0);
-    fctx.bezierCurveTo(-w * 1.05, -len * 0.35, -w * 0.62, -len * 0.88, tb, -len);
-    fctx.bezierCurveTo(w * 0.62, -len * 0.88, w * 1.05, -len * 0.35, 0, 0);
-    fctx.closePath();
-  }
-
-  function dibPetalRot(cx, cy, angRad, w, len, tipBend, fillA, s, d) {
-    var p = progBack(s, d);
-    if (p <= 0) return;
-    var alpha = clamp((p - 0.04) / 0.1, 0, 1);
-    fctx.save();
-    fctx.translate(cx, cy);
-    fctx.rotate(angRad);
-    fctx.rotate(-(1 - p) * 0.16);
-    fctx.scale(p, p);
-    petalShape(w, len, tipBend);
-    fctx.fillStyle = gradV2(0, 0, 0, -len, fillA[0], fillA[1], fillA[2]);
-    fctx.strokeStyle = C.stroke;
-    fctx.lineWidth = 1.3;
-    fctx.globalAlpha = alpha;
-    fctx.fill();
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  function disco(cx, cy, R, s) {
-    var p = progBack(s, 0.55);
-    if (p <= 0) return;
-    fctx.save();
-    fctx.translate(cx, cy);
-    fctx.scale(p, p);
-    var g = fctx.createRadialGradient(-R * 0.32, -R * 0.34, R * 0.12, 0, 0, R);
-    g.addColorStop(0, C.center);
-    g.addColorStop(1, C.centerD);
-    fctx.beginPath();
-    fctx.arc(0, 0, R, 0, 6.2832);
-    fctx.fillStyle = g;
-    fctx.fill();
-    fctx.strokeStyle = "rgba(42,20,2,0.5)";
-    fctx.lineWidth = 1.4;
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  function semillas(cx, cy, n, r0, r1, s) {
-    for (var i = 0; i < n; i++) {
-      var p = progBack(s + (i % 4) * 0.06, 0.4);
-      if (p <= 0) continue;
-      var ang = i * (6.2832 / n) + 0.35;
-      var rr = lin(r0, r1, (i % 4) / 3);
-      fctx.save();
-      fctx.translate(cx + rr * Math.cos(ang), cy + rr * Math.sin(ang));
-      fctx.beginPath();
-      fctx.arc(0, 0, 1.8, 0, 6.2832);
-      fctx.fillStyle = C.seed;
-      fctx.fill();
-      fctx.restore();
-    }
-  }
-
-  function chispas(cx, cy, rmin, rmax, n, s, step) {
-    for (var i = 0; i < n; i++) {
-      var st = s + i * (step || 0.05);
-      var p = progBack(st, 0.5);
-      if (p <= 0) continue;
-      var ang = i * 2.399963 + 0.5;
-      var rr = lin(rmin, rmax, (i % 7) / 6) * (0.8 + 0.2 * Math.sin(st * 7));
-      var tw = 0.55 + 0.45 * Math.sin((st + i) * 9 + T * 2.8);
-      fctx.save();
-      fctx.translate(cx + rr * Math.cos(ang), cy + rr * Math.sin(ang) * 0.9);
-      fctx.rotate(ang);
-      fctx.beginPath();
-      fctx.moveTo(0, -3.4 * p);
-      fctx.lineTo(1.3 * p, -1.1 * p);
-      fctx.lineTo(3.4 * p, 0);
-      fctx.lineTo(1.3 * p, 1.1 * p);
-      fctx.lineTo(0, 3.4 * p);
-      fctx.lineTo(-1.3 * p, 1.1 * p);
-      fctx.lineTo(-3.4 * p, 0);
-      fctx.lineTo(-1.3 * p, -1.1 * p);
-      fctx.closePath();
-      fctx.fillStyle = C.gold;
-      fctx.globalAlpha = tw;
-      fctx.fill();
-      fctx.restore();
-    }
-  }
-
-  function halo(cx, cy, r) {
-    var p = clamp(T / (flor.maxD - 0.6), 0, 1);
-    var g = fctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    g.addColorStop(0, "rgba(255,210,62," + (0.10 + p * 0.08) + ")");
-    g.addColorStop(1, "rgba(255,210,62,0)");
-    fctx.beginPath();
-    fctx.arc(cx, cy, r, 0, 6.2832);
-    fctx.fillStyle = g;
-    fctx.fill();
-  }
-
-  /* ---------- las cuatro flores ---------- */
-
-  function drGirasol() {
-    halo(150, 160, 150);
-    tallo(150, 478, 143, 300, 168, 5.2, 0.12, 0.9);
-    hoja(150, 432, -2.05, 1, 72, 40, 0.55, 0.62);
-    hoja(150, 396, -1.05, -1, 62, 34, 0.8, 0.62);
-    for (var i = 0; i < 16; i++) {
-      dibPetalRot(150, 150, (-90 + i * 22.5) * 0.0174533, 20, 82, 0.4, [C.petA, C.petM, C.petT], 1.35 + i * 0.075, 0.5);
-    }
-    disco(150, 150, 30, 2.65);
-    semillas(150, 150, 16, 9, 24, 2.85);
-    chispas(150, 150, 42, 92, 14, 3.1);
-  }
-
-  function tulPetal(shape, s, d) {
-    var p = progBack(s, d);
-    if (p <= 0) return;
-    var alpha = clamp((p - 0.05) / 0.1, 0, 1);
-    var g = shape === 2
-      ? gradV2(0, 0, 0, -160, C.petT, C.petT, "#fff9dd")
-      : gradV2(0, 0, 0, -140, C.petA, C.petM, C.petT);
-    fctx.save();
-    fctx.translate(150, 300);
-    fctx.scale(1, p);
-    fctx.globalAlpha = alpha;
-    fctx.beginPath();
-    if (shape === 0) {
-      fctx.moveTo(-6, -4);
-      fctx.bezierCurveTo(-30, -20, -44, -56, -38, -100);
-      fctx.bezierCurveTo(-22, -120, 2, -132, 8, -116);
-      fctx.bezierCurveTo(10, -92, 6, -48, 2, -4);
-    } else if (shape === 1) {
-      fctx.moveTo(6, -4);
-      fctx.bezierCurveTo(30, -20, 44, -56, 38, -100);
-      fctx.bezierCurveTo(22, -120, -2, -132, -8, -116);
-      fctx.bezierCurveTo(-10, -92, -6, -48, -2, -4);
-    } else {
-      fctx.moveTo(0, 8);
-      fctx.bezierCurveTo(-5, -36, -12, -106, -4, -152);
-      fctx.bezierCurveTo(4, -114, 0, -42, -2, -10);
-    }
-    fctx.closePath();
-    fctx.fillStyle = g;
-    fctx.strokeStyle = C.stroke;
-    fctx.lineWidth = 1.4;
-    fctx.fill();
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  function drTulip() {
-    halo(150, 200, 130);
-    tallo(150, 478, 158, 362, 296, 5, 0.12, 0.8);
-    hoja(150, 462, -2.3, 1, 84, 42, 0.5, 0.6);
-    hoja(150, 420, -0.9, -1, 68, 36, 0.72, 0.6);
-    tulPetal(0, 1.45, 0.62);
-    tulPetal(1, 1.62, 0.62);
-    tulPetal(2, 1.92, 0.7);
-    disco(150, 300, 11, 2.3);
-    chispas(150, 160, 40, 84, 10, 2.75);
-  }
-
-  function drRosa() {
-    halo(150, 160, 140);
-    tallo(150, 478, 162, 380, 292, 5, 0.12, 0.9);
-    hoja(150, 456, -2.15, 1, 78, 40, 0.5, 0.6);
-    hoja(150, 366, -1.2, -1, 64, 34, 0.78, 0.6);
-    for (var i = 0; i < 22; i++) {
-      var col = i < 5 ? [C.roseD, C.roseM] : i < 11 ? [C.roseM, C.petM] : i < 17 ? [C.petM, C.petT] : [C.petT, C.petM];
-      dibPetalRot(150, 170, i * 2.399963, 13, 30, 0.2, [col[0], col[1], col[1]], 1.3 + i * 0.09, 0.42);
-    }
-    disco(150, 170, 14, 3.35);
-    chispas(150, 170, 40, 86, 12, 3.45);
-  }
-
-  function petalLil(w, len) {
-    fctx.beginPath();
-    fctx.moveTo(0, 0);
-    fctx.bezierCurveTo(-w * 1.05, -len * 0.42, -w * 1.0, -len * 0.85, -w * 0.42, -len * 1.06);
-    fctx.bezierCurveTo(-w * 0.12, -len * 1.12, w * 0.12, -len * 1.12, w * 0.42, -len * 1.06);
-    fctx.bezierCurveTo(w * 1.0, -len * 0.85, w * 1.05, -len * 0.42, 0, 0);
-    fctx.closePath();
-  }
-
-  function dibPetalLil(cx, cy, angRad, w, len, tipBend, fillA, s, d) {
-    var p = progBack(s, d);
-    if (p <= 0) return;
-    var alpha = clamp((p - 0.04) / 0.1, 0, 1);
-    var rec = lin(-0.5, 0, p);
-    fctx.save();
-    fctx.translate(cx, cy);
-    fctx.rotate(angRad);
-    fctx.rotate(rec);
-    fctx.scale(p, p);
-    petalLil(w, len);
-    fctx.fillStyle = gradV2(0, 0, 0, -len, fillA[0], fillA[1], fillA[2]);
-    fctx.strokeStyle = C.stroke;
-    fctx.lineWidth = 1.3;
-    fctx.globalAlpha = alpha;
-    fctx.fill();
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  function estambre(x1, sx, s, d) {
-    var p = prog(s, d);
-    if (p <= 0) return;
-    fctx.save();
-    fctx.lineCap = "round";
-    fctx.strokeStyle = C.stam;
-    fctx.lineWidth = 2;
-    fctx.beginPath();
-    fctx.moveTo(150, 256);
-    fctx.lineTo(x1, 256 - lin(0, 76, p) * Math.sin(0.3));
-    fctx.stroke();
-    var a2 = progBack(s + 0.18, 0.4);
-    if (a2 > 0) {
-      fctx.beginPath();
-      fctx.arc(x1, 256 - lin(0, 76, p) * Math.sin(0.3), 3, 0, 6.2832);
-      fctx.fillStyle = C.anther;
-      fctx.fill();
-    }
-    fctx.restore();
-  }
-
-  function drLirio() {
-    halo(150, 190, 140);
-    tallo(150, 478, 140, 340, 248, 5, 0.12, 0.95);
-    hoja(150, 452, -2.1, 1, 82, 40, 0.55, 0.6);
-    hoja(150, 340, -1.0, -1, 60, 32, 0.8, 0.6);
-    for (var i = 0; i < 6; i++) {
-      var ang = (-90 + (i - 2.5) * 24) * 0.0174533;
-      dibPetalLil(150, 256, ang, 15, 96, 0, [C.petA, C.petM, C.petT], 1.5 + i * 0.12, 0.6);
-    }
-    estambre(150, 0, 2.45, 0.5);
-    estambre(158, -6, 2.6, 0.5);
-    estambre(142, 6, 2.6, 0.5);
-    disco(150, 254, 9, 2.7);
-    chispas(150, 160, 40, 78, 8, 2.95);
-  }
-
-  var DRAW = { girasol: drGirasol, "tulipán": drTulip, rosa: drRosa, lirio: drLirio };
-
-  function construirFlor(tipo) {
-    flor.tipo = tipo;
-    flor.on = true;
-    flor.t0 = performance.now();
-    flor.maxD = reduce ? MAXD_FAST : MAXD[tipo];
+  function buildFlower(tipo) {
+    var petal = COLORES_FLOR[tipo] || COLORES_FLOR.girasol;
+    var leaves = "";
+    for (var i = 1; i <= 6; i++) leaves += '<div class="flower__line__leaf flower__line__leaf--' + i + '"></div>';
+    var luces = "";
+    for (var j = 1; j <= 8; j++) luces += '<div class="flower__light flower__light--' + j + '"></div>';
+    var cont = $("#florCss");
+    cont.innerHTML = "";
+    var f = document.createElement("div");
+    f.className = "flower";
+    f.style.setProperty("--petal", petal);
+    f.innerHTML =
+      '<div class="flower__leafs">' +
+      '<div class="flower__leaf flower__leaf--1"></div>' +
+      '<div class="flower__leaf flower__leaf--2"></div>' +
+      '<div class="flower__leaf flower__leaf--3"></div>' +
+      '<div class="flower__leaf flower__leaf--4"></div>' +
+      '<div class="flower__white-circle"></div>' +
+      luces +
+      "</div>" +
+      '<div class="flower__line">' + leaves + "</div>";
+    cont.appendChild(f);
     hiloCam();
-    return flor.maxD;
-  }
-
-  function stepFlor(now) {
-    if (!flor.on) return;
-    var t = (now - flor.t0) / 1000;
-    T = reduce ? t * 10 : t;
-    fctx.clearRect(0, 0, FW, FH);
-    fctx.globalAlpha = 1;
-    var s = Math.sin(now * 0.0013);
-    fctx.save();
-    fctx.translate(FW / 2 - 150, 0); // centra el eje 150 en el lienzo (FW/2 = 215)
-    fctx.translate(150, 475);
-    fctx.rotate(s * 0.016);
-    fctx.translate(-150, -475);
-    DRAW[flor.tipo]();
-    fctx.restore();
+    return reduce ? 0.55 : 3.2;
   }
 
   /* ============================ Pétalos ambientales ============================ */
@@ -456,7 +144,6 @@
         dibujarPeta(c);
       }
     }
-    stepFlor(t);
     requestAnimationFrame(bucle);
   }
 
@@ -587,7 +274,7 @@
     mostrar(sc1, false);
     mostrar(sc2, true);
 
-    var maxD = construirFlor(tipo);
+    var maxD = buildFlower(tipo);
     florNombre.textContent = NOMBRES[tipo];
 
     var wait = reduce ? 1400 : (maxD + 0.9) * 1000;
