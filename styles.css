@@ -682,6 +682,34 @@ button:focus-visible {
 @keyframes growing-grass-ans--7 { 0% { transform-origin: bottom left; transform: rotate(-10deg) scale(0); } }
 @keyframes growing-grass-ans--8 { 0% { transform-origin: bottom right; transform: rotate(10deg) scale(0); } }
 
+.escena--girasol .flower__white-circle {
+  background: #593110;
+}
+.escena--girasol .flower__leafs::after {
+  background-color: #f9d93a;
+}
+
+.escena--tulipán .flower__leaf {
+  border-radius: 30% 70% 45% 55% / 60% 60% 40% 40%;
+}
+.escena--tulipán .flower__white-circle {
+  background: #ffd23e;
+}
+
+.escena--rosa .flower__leaf {
+  border-radius: 58% 42% 0 0 / 84% 84% 16% 16%;
+}
+.escena--rosa .flower__white-circle {
+  background: #ffe9a8;
+}
+
+.escena--lirio .flower__white-circle {
+  background: #fff;
+}
+.escena--lirio .flower__leaf {
+  background-image: linear-gradient(to top, var(--petal), #fffbe6);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .flor-css .flower,
   .flor-css .flower__leafs,
