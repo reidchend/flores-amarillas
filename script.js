@@ -39,83 +39,125 @@
 
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var COLORES_FLOR = {
-    girasol: "#fddd25",
-    "tulipán": "#f5b41c",
-    rosa: "#f7b733",
-    lirio: "#ffe98a",
+  /* ============= Universo corazón (galaxia de partículas) ============= */
+
+  var hcCanvas = $("#heartCanvas");
+  var hctx = hcCanvas && hcCanvas.getContext("2d");
+
+  var PALETAS_COLOR = {
+    girasol: ["#ffe98a", "#ffd23e", "#fff3b0", "#ffffff", "#f5b41c", "#ffb347"],
+    "tulipán": ["#ffd23e", "#ffb700", "#ffe066", "#fffbe6", "#f59e0b", "#ffdf8a"],
+    rosa: ["#ff80bf", "#ffb3da", "#ffd23e", "#ffffff", "#f489b5", "#ffdf9e"],
+    lirio: ["#fffbe6", "#ffd23e", "#ffe98a", "#ffffff", "#d9f2a5", "#f5b41c"],
   };
 
-  function buildFlower(tipo) {
-    var petal = COLORES_FLOR[tipo] || COLORES_FLOR.girasol;
-    var leaves = "";
-    for (var i = 1; i <= 6; i++) leaves += '<div class="flower__line__leaf flower__line__leaf--' + i + '"></div>';
-    var luces = "";
-    for (var j = 1; j <= 8; j++) luces += '<div class="flower__light flower__light--' + j + '"></div>';
-    var head =
-      '<div class="flower__leafs">' +
-      headPorTipo(tipo) +
-      luces +
-      "</div>";
-    var grassLeaves = "";
-    for (var k = 1; k <= 8; k++) grassLeaves += '<div class="flower__grass__leaf flower__grass__leaf--' + k + '"></div>';
-    var grass =
-      '<div class="flower__grass flower__grass--1">' +
-      '<div class="flower__grass--top"></div>' +
-      '<div class="flower__grass--bottom"></div>' +
-      grassLeaves +
-      '<div class="flower__grass__overlay"></div>' +
-      "</div>";
-    var grass2 =
-      '<div class="flower__grass flower__grass--2">' +
-      '<div class="flower__grass--top"></div>' +
-      '<div class="flower__grass--bottom"></div>' +
-      grassLeaves +
-      '<div class="flower__grass__overlay"></div>' +
-      "</div>";
-    var cont = $("#florCss");
-    cont.innerHTML = "";
-    var escena = document.createElement("div");
-    escena.className = "escena-flor escena--" + tipo;
-    escena.style.cssText = "position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;";
-    escena.innerHTML =
-      '<div class="flor-glow"></div>' +
-      '<div class="flower-side flower-side-l"><div class="flower">' + head + '<div class="flower__line">' + leaves + "</div></div></div>" +
-      '<div class="flower flower--main">' + head + '<div class="flower__line">' + leaves + "</div></div>" +
-      '<div class="flower-side"><div class="flower">' + head + '<div class="flower__line">' + leaves + "</div></div></div>" +
-      '<div class="growing-grass">' + grass + "</div>" +
-      '<div class="growing-grass">' + grass2 + "</div>";
-    var flores = escena.querySelectorAll(".flower");
-    for (var m = 0; m < flores.length; m++) flores[m].style.setProperty("--petal", petal);
-    cont.appendChild(escena);
-    hiloCam();
-    return reduce ? 0.25 : 4.6;
+  var uni = {
+    on: false,
+    tipo: "girasol",
+    W: 0,
+    H: 0,
+    raf: 0,
+    particulas: [],
+    estrellas: [],
+  };
+
+  function uniResize() {
+    uni.W = hcCanvas.width = window.innerWidth;
+    uni.H = hcCanvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", uniResize);
+
+  function puntoCorazon(t, s) {
+    return {
+      x: 16 * Math.pow(Math.sin(t), 3) * s,
+      y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s,
+    };
   }
 
-  function petalHtml(rot, t, delay) {
-    return '<div class="flower__petal" style="--rot:' + rot +
-      'deg;--t:' + t + ';--delay:' + delay.toFixed(2) + 's"></div>';
+  function iniciarUniverso(tipo) {
+    if (!hctx) return;
+    uniResize();
+    uni.tipo = tipo || uni.tipo;
+    uni.on = true;
+    var pal = PALETAS_COLOR[uni.tipo] || PALETAS_COLOR.girasol;
+    var n = reduce ? 420 : 1100;
+    uni.particulas = [];
+    for (var i = 0; i < n; i++) {
+      uni.particulas.push({
+        a: Math.random() * Math.PI * 2,
+        sx: (Math.random() - 0.5) * uni.W,
+        sy: (Math.random() - 0.5) * uni.H,
+        color: pal[i % pal.length],
+        size: Math.random() * 2 + 0.6,
+        off: (Math.random() - 0.5) * 26,
+        vel: Math.random() * 0.03 + 0.01,
+      });
+    }
+    uni.estrellas = [];
+    for (var k = 0; k < (reduce ? 90 : 260); k++) {
+      uni.estrellas.push({
+        x: Math.random() * uni.W,
+        y: Math.random() * uni.H,
+        size: Math.random() * 1.5,
+        a: Math.random() * 0.8 + 0.2,
+        sp: Math.random() * 0.02 + 0.005,
+      });
+    }
+    cancelAnimationFrame(uni.raf);
+    uni.raf = requestAnimationFrame(dibujarUniverso);
   }
 
-  function headPorTipo(tipo) {
-    var p = "", i;
-    if (tipo === "girasol") {
-      for (i = 0; i < 16; i++) p += petalHtml(i * 22.5, 0, 0.2 + i * 0.06);
-      return p + '<div class="flower__center"></div>';
+  function detenerUniverso() {
+    uni.on = false;
+    cancelAnimationFrame(uni.raf);
+  }
+
+  function dibujarUniverso(now) {
+    if (!uni.on || !hctx) return;
+    var time = now * 0.002;
+    var cx = uni.W / 2, cy = uni.H / 2, i;
+
+    hctx.clearRect(0, 0, uni.W, uni.H);
+
+    var g = hctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(uni.W, uni.H) / 1.4);
+    g.addColorStop(0, "#1c0b38");
+    g.addColorStop(0.5, "#0b0416");
+    g.addColorStop(1, "#030308");
+    hctx.fillStyle = g;
+    hctx.fillRect(0, 0, uni.W, uni.H);
+
+    for (i = 0; i < uni.estrellas.length; i++) {
+      var st = uni.estrellas[i];
+      var twi = Math.abs(Math.sin(Date.now() * st.sp) * 0.4 + 0.6);
+      hctx.fillStyle = "rgba(255,255,255," + twi.toFixed(3) + ")";
+      hctx.beginPath();
+      hctx.arc(st.x, st.y, st.size, 0, Math.PI * 2);
+      hctx.fill();
     }
-    if (tipo === "tulipán") {
-      for (i = 0; i < 6; i++) p += petalHtml(i * 60, 0, 0.2 + i * 0.09);
-      return p + '<div class="flower__sep"></div>';
+
+    var base = Math.min(uni.W, uni.H) / 45;
+    var pulse = base * (1 + 0.07 * Math.sin(time * 3.2));
+
+    hctx.globalCompositeOperation = "lighter";
+    hctx.shadowBlur = 10;
+    for (i = 0; i < uni.particulas.length; i++) {
+      var p = uni.particulas[i];
+      var hp = puntoCorazon(p.a, pulse);
+      var tX = cx + hp.x + Math.cos(p.a * 4 + time) * p.off;
+      var tY = cy + hp.y + Math.sin(p.a * 4 + time) * p.off;
+      p.a += 0.002;
+      p.sx += (tX - p.sx) * p.vel;
+      p.sy += (tY - p.sy) * p.vel;
+      hctx.fillStyle = p.color;
+      hctx.shadowColor = p.color;
+      hctx.beginPath();
+      hctx.arc(p.sx, p.sy, p.size, 0, Math.PI * 2);
+      hctx.fill();
     }
-    if (tipo === "rosa") {
-      for (i = 0; i < 5; i++) p += petalHtml(i * 72, "calc(var(--fv) * 6)", 0.15 + i * 0.06);
-      for (i = 0; i < 5; i++) p += petalHtml(i * 72 + 36, "calc(var(--fv) * 3.5)", 0.22 + i * 0.06);
-      for (i = 0; i < 4; i++) p += petalHtml(i * 90 + 18, "calc(var(--fv) * 1.4)", 0.3 + i * 0.07);
-      return p + '<div class="flower__center"></div>';
-    }
-    for (i = 0; i < 6; i++) p += petalHtml(i * 60, 0, 0.2 + i * 0.09);
-    for (i = 0; i < 6; i++) p += '<div class="flower__stamen" style="--rot:' + (i * 60 + 30) + 'deg;--delay:' + (0.8 + i * 0.12).toFixed(2) + 's"></div>';
-    return p + '<div class="flower__center"></div>';
+    hctx.globalCompositeOperation = "source-over";
+    hctx.shadowBlur = 0;
+
+    uni.raf = requestAnimationFrame(dibujarUniverso);
   }
 
   /* ============================ Pétalos ambientales ============================ */
@@ -320,7 +362,8 @@
     mostrar(sc1, false);
     mostrar(sc2, true);
 
-    var maxD = buildFlower(tipo);
+    iniciarUniverso(tipo);
+    var maxD = 4.2;
     florNombre.textContent = NOMBRES[tipo];
 
     var wait = reduce ? 1400 : (maxD + 0.9) * 1000;
@@ -332,6 +375,7 @@
   }
 
   function volverAElegir() {
+    detenerUniverso();
     mostrar(sc2, false);
     mostrar(sc1, true);
     poolMensajes = [];
