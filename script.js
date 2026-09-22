@@ -52,12 +52,7 @@
     for (var i = 1; i <= 6; i++) leaves += '<div class="flower__line__leaf flower__line__leaf--' + i + '"></div>';
     var luces = "";
     for (var j = 1; j <= 8; j++) luces += '<div class="flower__light flower__light--' + j + '"></div>';
-    var cont = $("#florCss");
-    cont.innerHTML = "";
-    var f = document.createElement("div");
-    f.className = "flower";
-    f.style.setProperty("--petal", petal);
-    f.innerHTML =
+    var head =
       '<div class="flower__leafs">' +
       '<div class="flower__leaf flower__leaf--1"></div>' +
       '<div class="flower__leaf flower__leaf--2"></div>' +
@@ -65,11 +60,39 @@
       '<div class="flower__leaf flower__leaf--4"></div>' +
       '<div class="flower__white-circle"></div>' +
       luces +
-      "</div>" +
-      '<div class="flower__line">' + leaves + "</div>";
-    cont.appendChild(f);
+      "</div>";
+    var grassLeaves = "";
+    for (var k = 1; k <= 8; k++) grassLeaves += '<div class="flower__grass__leaf flower__grass__leaf--' + k + '"></div>';
+    var grass =
+      '<div class="flower__grass flower__grass--1">' +
+      '<div class="flower__grass--top"></div>' +
+      '<div class="flower__grass--bottom"></div>' +
+      grassLeaves +
+      '<div class="flower__grass__overlay"></div>' +
+      "</div>";
+    var grass2 =
+      '<div class="flower__grass flower__grass--2">' +
+      '<div class="flower__grass--top"></div>' +
+      '<div class="flower__grass--bottom"></div>' +
+      grassLeaves +
+      '<div class="flower__grass__overlay"></div>' +
+      "</div>";
+    var cont = $("#florCss");
+    cont.innerHTML = "";
+    var escena = document.createElement("div");
+    escena.style.cssText = "position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;";
+    escena.innerHTML =
+      '<div class="flor-glow"></div>' +
+      '<div class="flower-side flower-side-l"><div class="flower">' + head + '<div class="flower__line">' + leaves + "</div></div></div>" +
+      '<div class="flower flower--main">' + head + '<div class="flower__line">' + leaves + "</div></div>" +
+      '<div class="flower-side"><div class="flower">' + head + '<div class="flower__line">' + leaves + "</div></div></div>" +
+      '<div class="growing-grass">' + grass + "</div>" +
+      '<div class="growing-grass">' + grass2 + "</div>";
+    var flores = escena.querySelectorAll(".flower");
+    for (var m = 0; m < flores.length; m++) flores[m].style.setProperty("--petal", petal);
+    cont.appendChild(escena);
     hiloCam();
-    return reduce ? 0.55 : 3.2;
+    return reduce ? 0.25 : 4.6;
   }
 
   /* ============================ Pétalos ambientales ============================ */
