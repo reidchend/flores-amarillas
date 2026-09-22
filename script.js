@@ -376,6 +376,7 @@
     fctx.globalAlpha = 1;
     var s = Math.sin(now * 0.0013);
     fctx.save();
+    fctx.translate(FW / 2 - 150, 0); // centra el eje 150 en el lienzo (FW/2 = 215)
     fctx.translate(150, 475);
     fctx.rotate(s * 0.016);
     fctx.translate(-150, -475);
